@@ -37,6 +37,14 @@ public class ConfigIntegration {
     @SerialEntry
     public Color skyColor = Color.WHITE;
 
+    /**
+     * Water Settings Entries
+     */
+    @SerialEntry
+    public boolean waterEnabled = false;
+    @SerialEntry
+    public Color waterColor = Color.WHITE;
+
     @SuppressWarnings("deprecation")
     public static Screen createConfigScreen(Screen parent)
     {
