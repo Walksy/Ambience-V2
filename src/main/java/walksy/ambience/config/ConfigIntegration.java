@@ -45,6 +45,38 @@ public class ConfigIntegration {
     @SerialEntry
     public Color waterColor = Color.WHITE;
 
+    /**
+     * Grass Settings Entries
+     */
+    @SerialEntry
+    public boolean grassEnabled = false;
+    @SerialEntry
+    public Color grassColor = Color.WHITE;
+
+    /**
+     * Cloud Settings Entries
+     */
+    @SerialEntry
+    public boolean cloudEnabled = false;
+    @SerialEntry
+    public Color cloudColor = Color.WHITE;
+
+    /**
+     * Lava Settings Entries
+     */
+    @SerialEntry
+    public boolean lavaEnabled = false;
+    @SerialEntry
+    public Color lavaColor = Color.WHITE;
+
+    /**
+     * Foliage Settings Entries
+     */
+    @SerialEntry
+    public boolean foliageEnabled = false;
+    @SerialEntry
+    public Color foliageColor = Color.WHITE;
+
     @SuppressWarnings("deprecation")
     public static Screen createConfigScreen(Screen parent)
     {

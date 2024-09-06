@@ -1,0 +1,13 @@
+{
+	"required": true,
+	"package": "walksy.ambience.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"ClientWorldPropertiesMixin",
+		"BiomeColorsMixin",
+		"ClientWorldMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

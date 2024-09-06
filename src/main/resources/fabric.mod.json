@@ -22,7 +22,7 @@
     ]
 	},
 	"mixins": [
-    "ambiencemod.json"
+		"mixin.ambiencemod.json"
 	],
 	"depends": {
 		"fabricloader": "*",

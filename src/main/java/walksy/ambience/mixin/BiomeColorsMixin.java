@@ -21,4 +21,12 @@ public class BiomeColorsMixin {
             cir.cancel();
         }
     }
+
+    @Inject(method = "getGrassColor", at = @At("HEAD"), cancellable = true)
+    private static void onGetGrassColor(BlockRenderView world, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
+        if (ConfigIntegration.CONFIG.instance().modEnabled && ConfigIntegration.CONFIG.instance().grassEnabled) {
+            EnvironmentManager.INSTANCE.setGrassColor(cir);
+            cir.cancel();
+        }
+    }
 }
