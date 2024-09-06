@@ -13,18 +13,16 @@ public class EnvironmentManager {
     public void setWaterColor(CallbackInfoReturnable<Integer> cir)
     {
         Color waterColor = ConfigIntegration.CONFIG.instance().waterColor;
-        cir.setReturnValue(waterColor.getRGB());
+        cir.setReturnValue(waterColor.getRGB()); //might need to be packed (.getPacked())
     }
 
     public void setSkyColor(CallbackInfoReturnable<Vec3d> cir)
     {
-        if (this.getPlayerDimension() == 2) {
-            Color skyColor = ConfigIntegration.CONFIG.instance().skyColor;
-            Vec3d newSkyColor = new Vec3d(skyColor.getRed() / 255f, skyColor.getGreen() / 255f, skyColor.getBlue() / 255f);
-            cir.setReturnValue(newSkyColor);
-        } else {
-
-        }
+        if (this.getSkyColor() == null) return;
+        Color c = this.getSkyColor();
+        Vec3d rtrn = new Vec3d(c.getRed() / 255F, c.getGreen() / 255F, c.getBlue() / 255F);
+        cir.setReturnValue(rtrn);
+        cir.cancel();
     }
 
     public void setCloudColor(CallbackInfoReturnable<Vec3d> cir)
@@ -42,7 +40,31 @@ public class EnvironmentManager {
     public void setGrassColor(CallbackInfoReturnable<Integer> cir)
     {
         Color grassColor = ConfigIntegration.CONFIG.instance().grassColor;
-        cir.setReturnValue(grassColor.getRGB());
+        cir.setReturnValue(grassColor.getRGB()); //might need to be packed (.getPacked())
+    }
+
+    public int getFoliageColor(int defaultz)
+    {
+        if (ConfigIntegration.CONFIG.instance().modEnabled && ConfigIntegration.CONFIG.instance().foliageEnabled)
+        {
+            return ConfigIntegration.CONFIG.instance().foliageColor.getRGB();
+        }
+        return defaultz;
+    }
+
+    private Color getSkyColor()
+    {
+        boolean overworld = ConfigIntegration.CONFIG.instance().overworldSkyEnabled;
+        boolean end = ConfigIntegration.CONFIG.instance().endSkyEnabled;
+        boolean nether = ConfigIntegration.CONFIG.instance().netherSkyEnabled;
+        return switch (this.getPlayerDimension()) {
+            case 2 -> overworld ? ConfigIntegration.CONFIG.instance().overworldSkyColor : null;
+
+            case 1 -> end ? ConfigIntegration.CONFIG.instance().endSkyColor : null;
+
+            case 0 -> nether ? ConfigIntegration.CONFIG.instance().netherSkyColor : null;
+            default -> null;
+        };
     }
 
     /**

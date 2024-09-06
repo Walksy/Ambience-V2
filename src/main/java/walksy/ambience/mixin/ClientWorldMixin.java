@@ -14,10 +14,9 @@ public class ClientWorldMixin {
 
     @Inject(method = "getSkyColor", at = @At("HEAD"), cancellable = true)
     private void onGetSkyColor(Vec3d cameraPos, float tickDelta, CallbackInfoReturnable<Vec3d> cir) {
-        if (ConfigIntegration.CONFIG.instance().skyEnabled && ConfigIntegration.CONFIG.instance().modEnabled)
+        if (ConfigIntegration.CONFIG.instance().modEnabled)
         {
             EnvironmentManager.INSTANCE.setSkyColor(cir);
-            cir.cancel();
         }
     }
 

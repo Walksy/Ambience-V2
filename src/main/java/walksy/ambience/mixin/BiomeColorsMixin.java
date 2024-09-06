@@ -29,4 +29,12 @@ public class BiomeColorsMixin {
             cir.cancel();
         }
     }
+
+    @Inject(method = "getFoliageColor", at = @At("HEAD"), cancellable = true)
+    private static void onGetFoliageColor(BlockRenderView world, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
+        //if (ConfigIntegration.CONFIG.instance().modEnabled && ConfigIntegration.CONFIG.instance().foliageEnabled) {
+            cir.setReturnValue(EnvironmentManager.INSTANCE.getFoliageColor(-1));
+            cir.cancel();
+        //}
+    }
 }
