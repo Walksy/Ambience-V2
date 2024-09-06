@@ -6,7 +6,8 @@
 		"ClientWorldPropertiesMixin",
 		"BiomeColorsMixin",
 		"ClientWorldMixin",
-		"FoliageColorsMixin"
+		"FoliageColorsMixin",
+		"FluidRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

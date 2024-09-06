@@ -10,6 +10,7 @@ import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import dev.isxander.yacl3.gui.YACLScreen;
 import dev.isxander.yacl3.gui.controllers.ColorController;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
@@ -19,7 +20,7 @@ public class ConfigIntegration {
 
     public static final ConfigClassHandler<ConfigIntegration> CONFIG = ConfigClassHandler.createBuilder(ConfigIntegration.class)
         .serializer(config -> GsonConfigSerializerBuilder.create(config)
-            .setPath(FabricLoader.getInstance().getConfigDir().resolve("walksyambience.json"))
+            .setPath(FabricLoader.getInstance().getConfigDir().resolve("ambience.json"))
             .build())
         .build();
 
@@ -92,6 +93,7 @@ public class ConfigIntegration {
     {
         return YetAnotherConfigLib.create(CONFIG, ((defaults, config, builder) -> builder
             .title(Text.literal("Ambience Config Screen"))
+                .save(ConfigIntegration::runnableSave)
             /**
              * General Settings Category
              */
@@ -183,6 +185,7 @@ public class ConfigIntegration {
                     /**
                      * Lava Color
                      */
+                    /*
                     .group(OptionGroup.createBuilder()
                             .name(Text.literal("Lava"))
                             .description(OptionDescription.of(Text.literal("All the settings for the lava")))
@@ -199,6 +202,8 @@ public class ConfigIntegration {
                                     .customController(opt -> new ColorController(opt, false))
                                     .build())
                             .build())
+
+                     */
                     /**
                      * Cloud Color
                      */
@@ -258,5 +263,11 @@ public class ConfigIntegration {
                             .build())
                 .build())
         )).generateScreen(parent);
+    }
+
+    private static void runnableSave()
+    {
+        CONFIG.save();
+        MinecraftClient.getInstance().worldRenderer.reload();
     }
 }

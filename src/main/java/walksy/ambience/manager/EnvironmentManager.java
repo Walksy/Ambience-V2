@@ -67,6 +67,11 @@ public class EnvironmentManager {
         };
     }
 
+    private int getColorPacked(Color color)
+    {
+        return -1;
+    }
+
     /**
      * 0 - Nether
      * 1 - End

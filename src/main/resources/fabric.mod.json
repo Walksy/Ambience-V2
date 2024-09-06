@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
-	"id": "dummymodule",
+	"id": "walksyambience",
 	"version": "${version}",
-	"name": "Dummy Mod",
-	"description": "Empty.",
+	"name": "Ambience Mod",
+	"description": "Walksy's Ambience, ported forward.",
 	"authors": [
 		"Walksy"
 	],
