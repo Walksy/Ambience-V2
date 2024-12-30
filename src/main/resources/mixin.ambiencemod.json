@@ -3,11 +3,18 @@
 	"package": "walksy.ambience.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"client": [
-		"ClientWorldPropertiesMixin",
 		"BiomeColorsMixin",
+		"BlockColorsMixin",
+		"WorldRendererMixin",
+		"FluidRendererMixin",
 		"ClientWorldMixin",
-		"FoliageColorsMixin",
-		"FluidRendererMixin"
+		"ClientWorldPropertiesMixin",
+		"EntityRenderDispatcherMixin",
+		"InGameOverlayRendererMixin",
+		"sodium.SodiumFluidRendererMixin",
+		"sodium.DefaultFluidRendererMixin",
+		"sodium.BlockRendererMixin",
+		"sprite.SpriteContentsMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

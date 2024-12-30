@@ -10,13 +10,12 @@ import walksy.ambience.config.ConfigIntegration;
 @Mixin(ClientWorld.Properties.class)
 public class ClientWorldPropertiesMixin {
 
-    //could be 'getTime()'
     @Inject(method = "getTimeOfDay", at = @At("HEAD"), cancellable = true)
     public void onGetTimeOfDay(CallbackInfoReturnable<Long> cir)
     {
         if (ConfigIntegration.CONFIG.instance().overrideTime && ConfigIntegration.CONFIG.instance().modEnabled)
         {
-            cir.setReturnValue(18000L);
+            cir.setReturnValue((long)ConfigIntegration.CONFIG.instance().overridedTime);
             cir.cancel();
         }
     }
