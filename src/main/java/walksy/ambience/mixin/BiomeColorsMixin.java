@@ -19,6 +19,6 @@ public class BiomeColorsMixin {
     private static void overrideWaterColor(BlockRenderView world, BlockPos pos, CallbackInfoReturnable<Integer> cir)
     {
         if (!ConfigIntegration.CONFIG.instance().waterEnabled || !ConfigIntegration.CONFIG.instance().modEnabled) return;
-        cir.setReturnValue(EnvironmentColorOverrider.FluidOverrider.getColor(Fluids.WATER));
+        cir.setReturnValue(EnvironmentColorOverrider.FluidOverrider.getColor());
     }
 }

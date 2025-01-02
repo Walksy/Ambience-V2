@@ -4,18 +4,10 @@
 	"compatibilityLevel": "JAVA_17",
 	"client": [
 		"BiomeColorsMixin",
-		"BlockColorsMixin",
-		"FluidRendererMixin",
 		"ClientWorldMixin",
 		"ClientWorldPropertiesMixin",
-		"EntityRenderDispatcherMixin",
-		"InGameOverlayRendererMixin",
 		"BackgroundRendererMixin",
-		"blaze3d.RenderSystemMixin",
-		"sodium.SodiumFluidRendererMixin",
-		"sodium.DefaultFluidRendererMixin",
-		"sodium.BlockRendererMixin",
-		"sprite.SpriteContentsMixin"
+		"blaze3d.RenderSystemMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -1,7 +1,6 @@
 package walksy.ambience.manager;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.text.Text;

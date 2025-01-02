@@ -79,47 +79,13 @@ public class EnvironmentColorOverrider {
         }
     }
 
-    public static class BlockOverrider
-    {
-
-        public static int getGrassColor(Block grassType, BlockRenderView world, BlockPos pos) {
-            if (grassType.equals(Blocks.TALL_GRASS)) {
-                return ConfigIntegration.CONFIG.instance().tallGrassEnabled ? ConfigIntegration.CONFIG.instance().tallGrassColor.getRGB() : BiomeColors.getFoliageColor(world, pos);
-            } else if (grassType.equals(Blocks.SHORT_GRASS)) {
-                return ConfigIntegration.CONFIG.instance().shortGrassEnabled ? ConfigIntegration.CONFIG.instance().shortGrassColor.getRGB() : BiomeColors.getFoliageColor(world, pos);
-            }
-            return ConfigIntegration.CONFIG.instance().grassBlockEnabled ? ConfigIntegration.CONFIG.instance().grassBlockColor.getRGB() : BiomeColors.getFoliageColor(world, pos);
-        }
-
-        public static int getBlockColor(Block block)
-        {
-            if (block instanceof FireBlock)
-            {
-                return ConfigIntegration.CONFIG.instance().fireEnabled ? ConfigIntegration.CONFIG.instance().fireColor.getRGB() : -1;
-            } else if (block instanceof LeavesBlock || block.equals(Blocks.AZALEA_LEAVES) || block.equals(Blocks.FLOWERING_AZALEA_LEAVES))
-            {
-                return ConfigIntegration.CONFIG.instance().leavesEnabled ? ConfigIntegration.CONFIG.instance().leavesColor.getRGB() : -1;
-            }
-
-            return -1;
-        }
-    }
 
     public static class FluidOverrider
     {
-
-        public static boolean shouldOverride(Fluid fluid)
+        public static int getColor()
         {
-            boolean bl = (fluid.getDefaultState().isIn(FluidTags.WATER) && ConfigIntegration.CONFIG.instance().waterEnabled)
-                    || (fluid.getDefaultState().isIn(FluidTags.LAVA) && ConfigIntegration.CONFIG.instance().lavaEnabled);
-            return ConfigIntegration.CONFIG.instance().modEnabled && bl;
-        }
+            return ConfigIntegration.CONFIG.instance().waterColor.getRGB();
 
-        public static int getColor(Fluid fluid)
-        {
-            return fluid.equals(Fluids.WATER)
-                    ? ConfigIntegration.CONFIG.instance().waterColor.getRGB()
-                    : ConfigIntegration.CONFIG.instance().lavaColor.getRGB();
         }
     }
 }

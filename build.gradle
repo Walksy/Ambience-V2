@@ -36,8 +36,6 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation("maven.modrinth:sodium:${project.sodium_version}") { transitive = false }
-	modImplementation("maven.modrinth:sodium-extra:${project.sodium_extra_version}") { transitive = false }
 
 	implementation 'com.twelvemonkeys.imageio:imageio-core:3.9.4'
 

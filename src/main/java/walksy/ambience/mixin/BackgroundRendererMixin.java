@@ -16,7 +16,7 @@ import java.awt.*;
 @Mixin(WorldRenderer.class)
 public class BackgroundRendererMixin {
 
-    @Inject(method = "renderSky", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;applyFogColor()V", shift = At.Shift.AFTER))
+    @Inject(method = "renderSky(Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;FLnet/minecraft/client/render/Camera;ZLjava/lang/Runnable;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BackgroundRenderer;applyFogColor()V", shift = At.Shift.AFTER))
     private void getApplyFog(Matrix4f matrix4f, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo ci)
     {
         if (ConfigIntegration.CONFIG.instance().overworldSkyGradientEnabled && ConfigIntegration.CONFIG.instance().modEnabled) {
