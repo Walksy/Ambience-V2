@@ -10,6 +10,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockRenderView;
 import walksy.ambience.config.ConfigIntegration;
 
@@ -18,34 +19,47 @@ public class EnvironmentColorOverrider {
     public static class SkyOverrider
     {
 
-        public static boolean shouldOverrideSky()
-        {
-            return getColor() != -1 && ConfigIntegration.CONFIG.instance().modEnabled;
-
+        public static boolean shouldOverrideSky() {
+            return !getColor().equals(new Vec3d(0, 0, 0)) && ConfigIntegration.CONFIG.instance().modEnabled;
         }
+
 
         public static boolean shouldOverrideClouds()
         {
             return ConfigIntegration.CONFIG.instance().cloudEnabled && ConfigIntegration.CONFIG.instance().modEnabled;
         }
 
-        public static int getCloudColor()
-        {
-            return ConfigIntegration.CONFIG.instance().cloudColor.getRGB();
+
+        public static Vec3d getCloudColor() {
+            int rgb = ConfigIntegration.CONFIG.instance().cloudColor.getRGB();
+            return new Vec3d(
+                    ((rgb >> 16) & 0xFF) / 255.0,
+                    ((rgb >> 8) & 0xFF) / 255.0,
+                    (rgb & 0xFF) / 255.0
+            );
         }
 
-        public static int getColor() {
+        public static Vec3d getColor() {
             boolean overworld = ConfigIntegration.CONFIG.instance().overworldSkyEnabled;
             boolean end = ConfigIntegration.CONFIG.instance().endSkyEnabled;
             boolean nether = ConfigIntegration.CONFIG.instance().netherSkyEnabled;
 
-            return switch (getPlayerDimension()) {
+            int rgb = switch (getPlayerDimension()) {
                 case 2 -> overworld ? ConfigIntegration.CONFIG.instance().overworldSkyColor.getRGB() : -1;
                 case 1 -> end ? ConfigIntegration.CONFIG.instance().endSkyColor.getRGB() : -1;
                 case 0 -> nether ? ConfigIntegration.CONFIG.instance().netherSkyColor.getRGB() : -1;
                 default -> -1;
             };
+
+            if (rgb == -1) return new Vec3d(0, 0, 0);
+
+            return new Vec3d(
+                    ((rgb >> 16) & 0xFF) / 255.0,
+                    ((rgb >> 8) & 0xFF) / 255.0,
+                    (rgb & 0xFF) / 255.0
+            );
         }
+
 
 
         /**

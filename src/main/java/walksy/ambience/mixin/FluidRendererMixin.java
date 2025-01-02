@@ -5,7 +5,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.block.FluidRenderer;
-import net.minecraft.client.render.model.ModelBaker;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -54,12 +54,12 @@ public class FluidRendererMixin {
             Sprite originalStillLava = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.LAVA.getDefaultState()).getParticleSprite();
             this.lavaSprites[0] = NativeImageManager.applyGrayscale(originalStillLava);
 
-            Sprite originalFlowingLava = ModelBaker.LAVA_FLOW.getSprite();
+            Sprite originalFlowingLava = ModelLoader.LAVA_FLOW.getSprite();
             this.lavaSprites[1] = NativeImageManager.applyGrayscale(originalFlowingLava);
 
             this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
-            this.waterSprites[1] = ModelBaker.WATER_FLOW.getSprite();
-            this.waterOverlaySprite = ModelBaker.WATER_OVERLAY.getSprite();
+            this.waterSprites[1] = ModelLoader.WATER_FLOW.getSprite();
+            this.waterOverlaySprite = ModelLoader.WATER_OVERLAY.getSprite();
         }
     }
 

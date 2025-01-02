@@ -28,6 +28,7 @@ public class ConfigIntegration {
             .build())
         .build();
 
+
     /**
      * General Settings Entries
      */

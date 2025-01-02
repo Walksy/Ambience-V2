@@ -35,7 +35,7 @@ public class NativeImageManager {
                 for (int y = 0; y < image.getHeight(); y++) {
                     for (int x = 0; x < image.getWidth(); x++) {
                         //Get the color based off the pixel
-                        int color = image.getColorArgb(x, y);
+                        int color = image.getColor(x, y);
 
                         //Extract color components of the pixel
                         int alpha = (color >> 24) & 0xFF;
@@ -49,7 +49,7 @@ public class NativeImageManager {
                         int grayscaleColor = (alpha << 24) | (luminance << 16) | (luminance << 8) | luminance;
                         //Replaces the original color of the pixel with the desaturated version
 
-                        image.setColorArgb(x, y, grayscaleColor);
+                        image.setColor(x, y, grayscaleColor);
                     }
                 }
                 /**

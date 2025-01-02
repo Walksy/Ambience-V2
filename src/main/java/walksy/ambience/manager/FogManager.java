@@ -1,6 +1,10 @@
 package walksy.ambience.manager;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.block.enums.CameraSubmersionType;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.text.Text;
 import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
@@ -12,27 +16,25 @@ public class FogManager {
 
     public static FogManager INSTANCE = new FogManager();
 
-    public void overrideFog(BackgroundRenderer.FogType fogType, CallbackInfoReturnable<Fog> cir)
+    public void overrideFog()
     {
-        if (!fogType.equals(BackgroundRenderer.FogType.FOG_SKY)) return;
-        Fog original = cir.getReturnValue();
         Color newColor = ConfigIntegration.CONFIG.instance().overworldSkyGradientColor;
         float red = newColor.getRed() / 255.0f;
         float green = newColor.getGreen() / 255.0f;
         float blue = newColor.getBlue() / 255.0f;
-        Vector4f c = new Vector4f(red, green, blue, original.alpha());
-        cir.setReturnValue(new Fog(original.start(), original.end(), original.shape(), c.x, c.y, c.z, c.w));
+        RenderSystem.setShaderFogColor(red, green, blue);
     }
 
-    public void overrideRenderSystemFog(Args args)
-    {
-        Color newColor = ConfigIntegration.CONFIG.instance().overworldSkyGradientColor;
-        float red = newColor.getRed() / 255.0f;
-        float green = newColor.getGreen() / 255.0f;
-        float blue = newColor.getBlue() / 255.0f;
-        args.set(0, red);
-        args.set(1, green);
-        args.set(2, blue);
+    public void overrideRenderSystemFog(Args args) {
+        if (MinecraftClient.getInstance().gameRenderer.getCamera().getSubmersionType() == CameraSubmersionType.NONE) {
+            Color newColor = ConfigIntegration.CONFIG.instance().overworldSkyGradientColor;
+            float red = newColor.getRed() / 255.0f;
+            float green = newColor.getGreen() / 255.0f;
+            float blue = newColor.getBlue() / 255.0f;
+            args.set(0, red);
+            args.set(1, green);
+            args.set(2, blue);
+        }
     }
 
 

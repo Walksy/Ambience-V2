@@ -13,7 +13,7 @@ public class ClientWorldMixin {
 
 
     @Inject(method = "getSkyColor", at = @At("HEAD"), cancellable = true)
-    public void overrideSkyColor(Vec3d cameraPos, float tickDelta, CallbackInfoReturnable<Integer> cir)
+    public void overrideSkyColor(Vec3d cameraPos, float tickDelta, CallbackInfoReturnable<Vec3d> cir)
     {
         if (EnvironmentColorOverrider.SkyOverrider.shouldOverrideSky()) {
             cir.setReturnValue(EnvironmentColorOverrider.SkyOverrider.getColor());
@@ -21,7 +21,7 @@ public class ClientWorldMixin {
     }
 
     @Inject(method = "getCloudsColor", at = @At("HEAD"), cancellable = true)
-    public void overrideCloudColor(float tickDelta, CallbackInfoReturnable<Integer> cir)
+    public void overrideCloudColor(float tickDelta, CallbackInfoReturnable<Vec3d> cir)
     {
         if (EnvironmentColorOverrider.SkyOverrider.shouldOverrideClouds()) {
             cir.setReturnValue(EnvironmentColorOverrider.SkyOverrider.getCloudColor());
