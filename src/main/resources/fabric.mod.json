@@ -8,7 +8,9 @@
 		"Walksy"
 	],
 	"contact": {
-
+		"issues": "https://github.com/Walksy/Ambience-V2/issues",
+		"sources": "https://github.com/Walksy/Ambience-V2",
+		"homepage": "https://discord.com/invite/zeu7uNuBWY"
 	},
 	"license": "MIT",
 	"icon": "assets/walksy/icon.png",
