@@ -3,9 +3,6 @@ package walksy.ambience.manager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.text.Text;
-import org.joml.Vector4f;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import walksy.ambience.config.ConfigIntegration;
 
