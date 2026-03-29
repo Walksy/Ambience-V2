@@ -1,35 +1,36 @@
 {
 	"schemaVersion": 1,
-	"id": "walksyambience",
+	"id": "ambience",
 	"version": "${version}",
-	"name": "Ambience Mod",
-	"description": "Walksy's Ambience, ported forward.",
+	"name": "Ambience",
+	"description": "Allows you to change the colors of the environment",
 	"authors": [
-		"Walksy"
+    "Walksy"
 	],
 	"contact": {
-		"issues": "https://github.com/Walksy/Ambience-V2/issues",
-		"sources": "https://github.com/Walksy/Ambience-V2",
-		"homepage": "https://discord.com/invite/zeu7uNuBWY"
+    "issues": "https://github.com/Walksy/Ambience-V2/issues",
+    "sources": "https://github.com/Walksy/Ambience-V2",
+    "homepage": "https://discord.com/invite/zeu7uNuBWY"
 	},
 	"license": "MIT",
 	"icon": "assets/walksy/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-      "walksy.ambience.AmbienceMod"
+      "walksy.ambience.Ambience"
 		],
-    "modmenu": [
-      "walksy.ambience.config.ModMenuIntegration"
+    "walksylib": [
+      "walksy.ambience.config.WalksyLibIntegration"
     ]
 	},
 	"mixins": [
-		"mixin.ambiencemod.json"
+    "ambience.mixins.json"
 	],
 	"depends": {
 		"fabricloader": "*",
 		"minecraft": "*",
 		"java": ">=17",
-		"fabric-api": "*"
-	}
+		"fabric-api": "*",
+    "walksylib": ">=0.9.95"
+  }
 }
