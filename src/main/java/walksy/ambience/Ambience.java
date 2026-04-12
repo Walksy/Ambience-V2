@@ -1,11 +1,11 @@
 package walksy.ambience;
 
 import net.fabricmc.api.ModInitializer;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 
 public class Ambience implements ModInitializer {
 
@@ -16,18 +16,17 @@ public class Ambience implements ModInitializer {
 
     /**
      * Forces loaded chunks to be rebuilt, along with cached color data in
-     * {@link ClientWorld#colorCache}
+     * {@link net.minecraft.client.multiplayer.ClientLevel#tintCaches}
      */
     public static void reloadWorld() {
-        WorldRenderer worldRenderer = MinecraftClient.getInstance().worldRenderer;
-        if (worldRenderer != null) {
-            worldRenderer.reload();
+        LevelRenderer levelRenderer = Minecraft.getInstance().levelRenderer;
+        if (levelRenderer != null) {
+            levelRenderer.allChanged();
         }
     }
 
-    public static boolean checkDimension(RegistryKey<World> dimension) {
-        ClientWorld world = MinecraftClient.getInstance().world;
-        //if the world is null the player is likely on the title screen
-        return world == null || world.getRegistryKey().equals(dimension);
+    public static boolean checkDimension(ResourceKey<Level> dimension) {
+        ClientLevel level = Minecraft.getInstance().level;
+        return level == null || level.dimension().equals(dimension);
     }
 }

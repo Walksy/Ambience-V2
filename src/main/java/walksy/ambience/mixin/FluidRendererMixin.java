@@ -1,12 +1,11 @@
 package walksy.ambience.mixin;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.block.FluidRenderer;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.FluidRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,22 +21,20 @@ public class FluidRendererMixin {
     @Unique
     private final ThreadLocal<Boolean> overrideVertex = ThreadLocal.withInitial(() -> false);
 
-    @Inject(method = "render", at = @At("HEAD"))
-    private void ambience$captureFluidType(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState, CallbackInfo ci) {
-        overrideVertex.set(fluidState.isIn(FluidTags.LAVA));
+    @Inject(method = "tesselate", at = @At("HEAD"))
+    private void ambience$captureFluidType(BlockAndTintGetter level, BlockPos pos, FluidRenderer.Output output, BlockState blockState, FluidState fluidState, CallbackInfo ci) {
+        overrideVertex.set(fluidState.is(FluidTags.LAVA));
     }
 
     @ModifyArgs(
-        method = "render",
+        method = "vertex",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/render/block/FluidRenderer;vertex(Lnet/minecraft/client/render/VertexConsumer;FFFFFFFFI)V"
+            target = "Lcom/mojang/blaze3d/vertex/VertexConsumer;addVertex(FFFIFFIIFFF)V"
         )
     )
     private void ambience$modifyLavaVertexColor(Args args) {
         if (!Config.modEnabled || !Config.lavaTintEnabled || !this.overrideVertex.get()) return;
-        args.set(4, Config.lavaTint.getRed() / 255F);
-        args.set(5, Config.lavaTint.getGreen() / 255F);
-        args.set(6, Config.lavaTint.getBlue() / 255F);
+        args.set(3, Config.lavaTint.getRGB());
     }
 }

@@ -1,15 +1,18 @@
 package walksy.ambience.mixin;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.client.color.block.BlockColors;
-import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.registry.Registries;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.GrassColors;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.color.block.BlockTintSources;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,91 +22,84 @@ import walksy.ambience.config.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.BooleanSupplier;
+import java.util.function.IntSupplier;
 
 @Mixin(BlockColors.class)
 public class BlockColorsMixin {
 
-    @Inject(method = "create", at = @At("RETURN"))
+    @Inject(method = "createDefault", at = @At("RETURN"))
     private static void create(CallbackInfoReturnable<BlockColors> cir) {
         BlockColors instance = cir.getReturnValue();
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.grassBlockColorEnabled) {
-                return Config.grassBlockColor.getRGB();
-            }
-            return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getDefaultColor();
-        }, Blocks.GRASS_BLOCK);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.grassBlockColorEnabled,
+                        () -> Config.grassBlockColor.getRGB(), BlockTintSources.grassBlock())
+        ), Blocks.GRASS_BLOCK);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.grassColorEnabled) {
-                return Config.grassColor.getRGB();
-            }
-            return world != null && pos != null
-                ? BiomeColors.getGrassColor(world, state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos)
-                : GrassColors.getDefaultColor();
-        }, Blocks.TALL_GRASS);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.grassColorEnabled,
+                        () -> Config.grassColor.getRGB(), BlockTintSources.doubleTallGrass())
+        ), Blocks.TALL_GRASS, Blocks.LARGE_FERN);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.grassColorEnabled) {
-                return Config.grassColor.getRGB();
-            }
-            return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getDefaultColor();
-        }, Blocks.SHORT_GRASS);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.grassColorEnabled,
+                        () -> Config.grassColor.getRGB(), BlockTintSources.grass())
+        ), Blocks.SHORT_GRASS);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.fernColorEnabled) {
-                return Config.fernColor.getRGB();
-            }
-            return world != null && pos != null
-                ? BiomeColors.getGrassColor(world, state.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos)
-                : GrassColors.getDefaultColor();
-        }, Blocks.LARGE_FERN);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.fernColorEnabled,
+                        () -> Config.fernColor.getRGB(), BlockTintSources.grass())
+        ), Blocks.FERN);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.fernColorEnabled) {
-                return Config.fernColor.getRGB();
-            }
-            return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getDefaultColor();
-        }, Blocks.FERN);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.vineColorEnabled,
+                        () -> Config.vineColor.getRGB(), BlockTintSources.foliage())
+        ), Blocks.VINE);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.vineColorEnabled) {
-                return Config.vineColor.getRGB();
-            }
-            return world != null && pos != null ? BiomeColors.getFoliageColor(world, pos) : -12012264;
-        }, Blocks.VINE);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.lilyPadColorEnabled,
+                        () -> Config.lilyPadColor.getRGB(), BlockTintSources.constant(-9321636, -14647248))
+        ), Blocks.LILY_PAD);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.lilyPadColorEnabled) {
-                return Config.lilyPadColor.getRGB();
-            }
-            return world != null && pos != null ? -14647248 : -9321636;
-        }, Blocks.LILY_PAD);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.seagrassColorEnabled,
+                        () -> Config.seagrassColor.getRGB(), BlockTintSources.constant(-1))
+        ), Blocks.SEAGRASS, Blocks.TALL_SEAGRASS);
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.seagrassColorEnabled) {
-                return Config.seagrassColor.getRGB();
-            }
-            return -1;
-        }, Blocks.SEAGRASS, Blocks.TALL_SEAGRASS);
+        instance.register(List.of(
+                configSource(() -> Config.modEnabled && Config.leafColorEnabled,
+                        () -> Config.leafColor.getRGB(), BlockTintSources.foliage())
+        ), getLeaves());
+    }
 
-        instance.registerColorProvider((state, world, pos, tintIndex) -> {
-            if (Config.modEnabled && Config.leafColorEnabled) {
-                return Config.leafColor.getRGB();
+    @Unique
+    private static BlockTintSource configSource(BooleanSupplier condition, IntSupplier color, BlockTintSource fallback) {
+        return new BlockTintSource() {
+            @Override
+            public int color(BlockState state) {
+                return condition.getAsBoolean() ? color.getAsInt() : fallback.color(state);
             }
-            return world != null && pos != null ? BiomeColors.getFoliageColor(world, pos) : -12012264;
-        }, getLeaves());
+
+            @Override
+            public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+                return condition.getAsBoolean() ? color.getAsInt() : fallback.colorInWorld(state, level, pos);
+            }
+
+            @Override
+            public Set<Property<?>> relevantProperties() {
+                return fallback.relevantProperties();
+            }
+        };
     }
 
     @Unique
     private static Block[] getLeaves() {
-        List<Block> leavesBlocks = new ArrayList<>();
-        for (Identifier id : Registries.BLOCK.getIds()) {
-            Block block = Registries.BLOCK.get(id);
-            if (block instanceof LeavesBlock) {
-                leavesBlocks.add(block);
-            }
+        List<Block> leaves = new ArrayList<>();
+        for (Block block : BuiltInRegistries.BLOCK) {
+            if (block instanceof LeavesBlock) leaves.add(block);
         }
-        return leavesBlocks.toArray(new Block[0]);
+        return leaves.toArray(new Block[0]);
     }
 }

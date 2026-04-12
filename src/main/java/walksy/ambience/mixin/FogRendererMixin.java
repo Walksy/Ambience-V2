@@ -1,27 +1,24 @@
 package walksy.ambience.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import net.minecraft.block.enums.CameraSubmersionType;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.client.render.fog.AtmosphericFogModifier;
-import net.minecraft.client.render.fog.FogData;
-import net.minecraft.client.render.fog.FogModifier;
-import net.minecraft.client.render.fog.FogRenderer;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
+import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.fog.FogData;
+import net.minecraft.client.renderer.fog.FogRenderer;
+import net.minecraft.client.renderer.fog.environment.FogEnvironment;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.material.FogType;
 import org.joml.Vector4f;
+import org.joml.Vector4fc;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import walksy.ambience.config.Config;
 
 import java.util.List;
@@ -31,55 +28,45 @@ public class FogRendererMixin {
 
     @Shadow
     @Final
-    private static List<FogModifier> FOG_MODIFIERS;
-    @Unique
-    private FogModifier currentFogModifier = null;
+    private static List<FogEnvironment> FOG_ENVIRONMENTS;
 
     @Unique
     private Vector4f currentFogColor = null;
 
-    @Redirect(method = "getFogColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/fog/FogModifier;getFogColor(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/render/Camera;IF)I"))
-    public int getFogColor(FogModifier instance, ClientWorld world, Camera camera, int viewDistance, float skyDarkness) {
-        this.currentFogModifier = instance;
-        return instance.getFogColor(world, camera, viewDistance, skyDarkness);
-    }
 
-    @Inject(method = "applyFog(Lnet/minecraft/client/render/Camera;ILnet/minecraft/client/render/RenderTickCounter;FLnet/minecraft/client/world/ClientWorld;)Lorg/joml/Vector4f;", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/CommandEncoder;mapBuffer(Lcom/mojang/blaze3d/buffers/GpuBuffer;ZZ)Lcom/mojang/blaze3d/buffers/GpuBuffer$MappedView;"), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void applyFog(Camera camera, int viewDistance, RenderTickCounter renderTickCounter, float f, ClientWorld clientWorld, CallbackInfoReturnable<Vector4f> cir, float g, Vector4f vector4f, float h, CameraSubmersionType cameraSubmersionType, Entity entity, FogData fogData) {
+    @Inject(method = "setupFog", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/fog/FogData;renderDistanceEnd:F", opcode = Opcodes.PUTFIELD), locals = LocalCapture.CAPTURE_FAILHARD)
+    public void applyFog(Camera camera, int renderDistanceInChunks, DeltaTracker deltaTracker, float darkenWorldAmount, ClientLevel level, CallbackInfoReturnable<FogData> cir, float partialTickTime, float renderDistanceInBlocks, FogType fogType, Entity entity, FogData fog, float renderDistanceFogSpan) {
         if (!Config.modEnabled || !Config.fogDistanceEnabled) {
             return;
         }
 
-        for (FogModifier fogModifier : FOG_MODIFIERS) {
-            if (fogModifier.shouldApply(cameraSubmersionType, entity)) {
-                fogModifier.applyStartEndModifier(fogData, camera, clientWorld, (float) (Config.fogDistance * 16), renderTickCounter);
+        for (FogEnvironment fogModifier : FOG_ENVIRONMENTS) {
+            if (fogModifier.isApplicable(fogType, entity)) {
+                fogModifier.setupFog(fog, camera, level, (float) (Config.fogDistance * 16), deltaTracker);
                 break;
             }
         }
     }
 
-    @ModifyArgs(method = "applyFog(Lnet/minecraft/client/render/Camera;ILnet/minecraft/client/render/RenderTickCounter;FLnet/minecraft/client/world/ClientWorld;)Lorg/joml/Vector4f;", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/fog/FogRenderer;applyFog(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;FFFFFF)V"))
-    public void applyFogToRenderPass(Args args) {
+    @ModifyArg(method = "updateBuffer(Ljava/nio/ByteBuffer;ILorg/joml/Vector4f;FFFFFF)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/buffers/Std140Builder;putVec4(Lorg/joml/Vector4fc;)Lcom/mojang/blaze3d/buffers/Std140Builder;"))
+    public Vector4fc applyFogToRenderPass(Vector4fc vec) {
         if (!Config.modEnabled) {
-            return;
+            return vec;
         }
-        if (this.currentFogModifier instanceof AtmosphericFogModifier) {
-            this.currentFogColor = args.get(2);
-            Vector4f fogColor = Config.getFogColor();
-            if (fogColor != null) {
-                this.currentFogColor = fogColor;
-            } /*else if (Config.skyColorEnabled) {
-                this.currentFogColor = Config.getSkyColor();
-            }*/
-            args.set(2, this.currentFogColor);
+        Vector4f fogColor = Config.getFogColor();
+        if (fogColor != null) {
+            this.currentFogColor = fogColor;
+            return this.currentFogColor;
         }
+        return vec;
     }
 
-    @ModifyReturnValue(method = "applyFog(Lnet/minecraft/client/render/Camera;ILnet/minecraft/client/render/RenderTickCounter;FLnet/minecraft/client/world/ClientWorld;)Lorg/joml/Vector4f;", at = @At("RETURN"))
-    public Vector4f applyFog(Vector4f original) {
-        if (!Config.modEnabled || this.currentFogColor == null) {
-            return original;
+    @Inject(method = "computeFogColor", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
+    public void applyFog(Camera camera, float partialTicks, ClientLevel level, int renderDistance, float darkenWorldAmount, Vector4f dest, CallbackInfo ci, FogType fogType, Entity entity, FogEnvironment colorSourceEnvironment, FogEnvironment darknessModifyingEnvironment, int color, float voidDarknessOnsetRange, float darkness, float fogRed, float fogGreen, float fogBlue, float brightenFactor) {
+        if (!Config.modEnabled || this.currentFogColor == null || colorSourceEnvironment == null) {
+            return;
         }
-        return this.currentFogColor;
+
+        dest.set(this.currentFogColor);
     }
 }

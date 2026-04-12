@@ -10,8 +10,7 @@ import main.walksy.lib.core.config.local.options.NumericalOption;
 import main.walksy.lib.core.config.local.options.groups.OptionGroup;
 import main.walksy.lib.core.config.local.options.type.WalksyLibColor;
 import main.walksy.lib.core.utils.PathUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import org.joml.Vector4f;
 import walksy.ambience.Ambience;
 
@@ -123,12 +122,12 @@ public class Config implements WalksyLibConfig {
                         .build())
                     .addOption(BooleanOption.createBuilder("Fog Distance Enabled", () -> fogDistanceEnabled, fogDistanceEnabled, val -> fogDistanceEnabled = val)
                         .description(OptionDescription.ofOrderedString(() -> "Requires 'Global Fog' to be enabled via sodium"))
-                        .availability(() -> modEnabled && Ambience.checkDimension(World.OVERWORLD), "Ambience must be enabled and be in the overworld")
+                        .availability(() -> modEnabled && Ambience.checkDimension(Level.OVERWORLD), "Ambience must be enabled and be in the overworld")
                         .build())
                     .addOption(NumericalOption.createBuilder("Fog Distance", () -> fogDistance, fogDistance, val -> fogDistance = val)
                         .description(OptionDescription.ofOrderedString(() -> "Requires 'Global Fog' to be enabled via sodium"))
                         .values(0D, 33D, 1D)
-                        .availability(() -> modEnabled && fogDistanceEnabled && Ambience.checkDimension(World.OVERWORLD), "Enable 'Fog Distance' and be in the overworld first")
+                        .availability(() -> modEnabled && fogDistanceEnabled && Ambience.checkDimension(Level.OVERWORLD), "Enable 'Fog Distance' and be in the overworld first")
                         .build())
                     .build())
                 .group(OptionGroup.createBuilder("Fluid")
@@ -210,7 +209,7 @@ public class Config implements WalksyLibConfig {
     /**
      * Returns the current sky color as a normalized RGBA vector.
      * <p>
-     * {@link net.minecraft.client.render.fog.FogRenderer} uses {@link Vector4f} objects to handle color components
+     * {@link net.minecraft.client.renderer.fog.FogRenderer} uses {@link Vector4f} objects to handle color components
      *
      * @return a {@link Vector4f} containing the normalized sky color components
      */
@@ -224,25 +223,21 @@ public class Config implements WalksyLibConfig {
     /**
      * Returns the current fog color as a normalized RGBA vector based on the player's dimension.
      * <p>
-     * {@link net.minecraft.client.render.fog.FogRenderer} uses {@link Vector4f} objects to handle color components
+     * {@link net.minecraft.client.renderer.fog.FogRenderer} uses {@link Vector4f} objects to handle color components
      *
      * @return a {@link Vector4f} containing the normalized fog color components, or null if disabled for the current dimension
      */
     public static Vector4f getFogColor() {
         WalksyLibColor color = overworldFogColor;
-
-        if (MinecraftClient.getInstance() != null) {
-            if (Ambience.checkDimension(World.NETHER)) {
-                if (!netherFogColorEnabled) return null;
-                color = netherFogColor;
-            } else if (Ambience.checkDimension(World.END)) {
-                if (!endFogColorEnabled) return null;
-                color = endFogColor;
-            } else {
-                if (!overWorldFogColorEnabled) return null;
-            }
+        if (Ambience.checkDimension(Level.NETHER)) {
+            if (!netherFogColorEnabled) return null;
+            color = netherFogColor;
+        } else if (Ambience.checkDimension(Level.END)) {
+            if (!endFogColorEnabled) return null;
+            color = endFogColor;
+        } else {
+            if (!overWorldFogColorEnabled) return null;
         }
-
         float r = color.getRed() / 255F;
         float g = color.getGreen() / 255F;
         float b = color.getBlue() / 255F;

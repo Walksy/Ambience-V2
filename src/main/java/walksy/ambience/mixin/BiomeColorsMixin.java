@@ -1,8 +1,8 @@
 package walksy.ambience.mixin;
 
-import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockRenderView;
+import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.core.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -12,10 +12,10 @@ import walksy.ambience.config.Config;
 @Mixin(BiomeColors.class)
 public class BiomeColorsMixin {
 
-    @Inject(method = "getWaterColor", at = @At("HEAD"), cancellable = true)
-    private static void onGetWaterColor(BlockRenderView world, BlockPos pos, CallbackInfoReturnable<Integer> info) {
+    @Inject(method = "getAverageWaterColor", at = @At("HEAD"), cancellable = true)
+    private static void onGetWaterColor(BlockAndTintGetter level, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
         if (Config.modEnabled && Config.waterColorEnabled) {
-            info.setReturnValue(Config.waterColor.getRGB());
+            cir.setReturnValue(Config.waterColor.getRGB());
         }
     }
 }

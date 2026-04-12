@@ -3,10 +3,10 @@
 	"package": "walksy.ambience.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"client": [
-    "ClientWorldPropertiesMixin",
-    "SkyRenderingMixin",
+		"ClientLevelDataMixin",
+		"SkyRendererMixin",
     "BiomeColorsMixin",
-    "WorldRendererMixin",
+      "LevelRendererMixin",
     "FogRendererMixin",
     "FluidRendererMixin",
     "BlockColorsMixin"
